@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+psycopg2-binary
+bcrypt
+PyJWT
+python-multipart
+insightface
+onnxruntime
+easyocr
+opencv-python-headless
+numpy
