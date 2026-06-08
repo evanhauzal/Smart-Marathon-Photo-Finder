@@ -11,7 +11,7 @@ DB_CONFIG = {
     "host": "localhost",
     "port": 5432,
     "user": "postgres",
-    "password": "Naya110212",
+    "password": "Falah123",
     "dbname": "marathon_db",
 }
 
