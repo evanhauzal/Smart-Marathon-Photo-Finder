@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, UserPlus } from 'lucide-react';
+import API_URL from "../services/api";
 
 const RegisterPage = () => {
   const [name, setName] = useState('');
@@ -10,11 +11,37 @@ const RegisterPage = () => {
   const [role, setRole] = useState('USER');
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Will connect to backend later
-    console.log('Register:', { name, email, password, role });
-  };
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  try {
+    const response = await fetch(
+      `${API_URL}/api/auth/register`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          role,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.detail);
+    }
+
+    alert("Registration successful");
+  } catch (err: any) {
+    alert(err.message);
+  }
+};
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
