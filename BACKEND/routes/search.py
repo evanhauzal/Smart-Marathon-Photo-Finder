@@ -12,13 +12,13 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 from BACKEND.middleware.auth_middleware import require_role
-from MODEL.face_search import search_all_events as face_search_all
-from MODEL.bib_search import search_all_events as bib_search_all
+from BACKEND.MODEL.face_search import search_all_events as face_search_all
+from BACKEND.MODEL.bib_search import search_all_events as bib_search_all
 
 router = APIRouter(prefix="/api/search", tags=["Search"])
 
 # Base directory for photos
-PHOTOS_BASE_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "PHOTOS")
+PHOTOS_BASE_DIR = os.path.join(os.path.dirname(__file__), "..", "PHOTOS")
 
 
 @router.post("/face")

@@ -1,12 +1,12 @@
 """
 Authentication module.
-Handles user registration, login, and JWT token management.
+Handles user registration, login, and JWT token management using Supabase.
 """
 
 import bcrypt
 import jwt
 import datetime
-from .db import get_connection
+from .db import get_supabase_client
 
 # JWT Configuration
 JWT_SECRET = "smart-marathon-secret-key-2026"
@@ -53,7 +53,7 @@ def decode_token(token: str) -> dict:
 
 def register_user(name: str, email: str, password: str, role: str) -> dict:
     """
-    Register a new user.
+    Register a new user using Supabase Client.
     Returns user info dict on success.
     Raises ValueError on duplicate email or invalid role.
     """
@@ -61,84 +61,65 @@ def register_user(name: str, email: str, password: str, role: str) -> dict:
         raise ValueError("Role must be 'USER' or 'PHOTOGRAPHER'")
 
     password_hashed = hash_password(password)
-
-    conn = get_connection()
-    cursor = conn.cursor()
+    supabase = get_supabase_client()
 
     try:
-        cursor.execute(
-            """
-            INSERT INTO users (name, email, password_hash, role)
-            VALUES (%s, %s, %s, %s)
-            RETURNING id, name, email, role, created_at
-            """,
-            (name, email, password_hashed, role),
-        )
-        user = cursor.fetchone()
-        conn.commit()
-        return dict(user)
+        response = supabase.table("users").insert({
+            "name": name,
+            "email": email,
+            "password_hash": password_hashed,
+            "role": role
+        }).execute()
+
+        if not response.data:
+            raise ValueError("Failed to register user")
+
+        return response.data[0]
+        
     except Exception as e:
-        conn.rollback()
-        if "unique" in str(e).lower():
+        if "duplicate key" in str(e).lower() or "already registered" in str(e).lower():
             raise ValueError("Email already registered")
         raise
-    finally:
-        cursor.close()
-        conn.close()
 
 
 def login_user(email: str, password: str) -> dict:
     """
-    Authenticate a user and return a JWT token.
+    Authenticate a user using Supabase Client and return a JWT token.
     Returns dict with token and user info.
     Raises ValueError on invalid credentials.
     """
-    conn = get_connection()
-    cursor = conn.cursor()
+    supabase = get_supabase_client()
 
-    try:
-        cursor.execute(
-            "SELECT id, name, email, password_hash, role FROM users WHERE email = %s",
-            (email,),
-        )
-        user = cursor.fetchone()
+    response = supabase.table("users").select("*").eq("email", email).execute()
+    
+    if not response.data:
+        raise ValueError("Invalid email or password")
+        
+    user = response.data[0]
 
-        if not user:
-            raise ValueError("Invalid email or password")
+    if not verify_password(password, user["password_hash"]):
+        raise ValueError("Invalid email or password")
 
-        if not verify_password(password, user["password_hash"]):
-            raise ValueError("Invalid email or password")
+    token = generate_token(user["id"], user["email"], user["role"])
 
-        token = generate_token(user["id"], user["email"], user["role"])
-
-        return {
-            "token": token,
-            "user": {
-                "id": user["id"],
-                "name": user["name"],
-                "email": user["email"],
-                "role": user["role"],
-            },
-        }
-    finally:
-        cursor.close()
-        conn.close()
+    return {
+        "token": token,
+        "user": {
+            "id": user["id"],
+            "name": user["name"],
+            "email": user["email"],
+            "role": user["role"],
+        },
+    }
 
 
 def get_user_by_id(user_id: int) -> dict:
-    """Fetch user info by ID."""
-    conn = get_connection()
-    cursor = conn.cursor()
+    """Fetch user info by ID using Supabase Client."""
+    supabase = get_supabase_client()
 
-    try:
-        cursor.execute(
-            "SELECT id, name, email, role, created_at FROM users WHERE id = %s",
-            (user_id,),
-        )
-        user = cursor.fetchone()
-        if not user:
-            raise ValueError("User not found")
-        return dict(user)
-    finally:
-        cursor.close()
-        conn.close()
+    response = supabase.table("users").select("id, name, email, role, created_at").eq("id", user_id).execute()
+    
+    if not response.data:
+        raise ValueError("User not found")
+        
+    return response.data[0]

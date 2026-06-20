@@ -1,0 +1,8 @@
+FRONTEND/
+.git/
+.gitignore
+.env
+__pycache__/
+*.pyc
+vercel.json
+README.md

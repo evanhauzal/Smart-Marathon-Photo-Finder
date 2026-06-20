@@ -9,3 +9,4 @@ onnxruntime
 easyocr
 opencv-python-headless
 numpy
+supabase

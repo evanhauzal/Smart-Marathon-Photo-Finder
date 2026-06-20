@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "BACKEND/main.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "FRONTEND/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/BACKEND/main.py"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/FRONTEND/dist/assets/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/FRONTEND/dist/index.html"
+    }
+  ]
+}

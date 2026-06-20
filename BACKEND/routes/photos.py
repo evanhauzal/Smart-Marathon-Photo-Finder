@@ -16,7 +16,7 @@ from BACKEND.middleware.auth_middleware import require_role, get_current_user
 router = APIRouter(prefix="/api/photos", tags=["Photos"])
 
 # Base directory for photos
-PHOTOS_BASE_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "PHOTOS")
+PHOTOS_BASE_DIR = os.path.join(os.path.dirname(__file__), "..", "PHOTOS")
 
 
 @router.post("/upload")

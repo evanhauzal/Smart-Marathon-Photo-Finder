@@ -10,7 +10,7 @@ import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
-from DATABASE_LOGIN.auth import register_user, login_user, get_user_by_id
+from BACKEND.DATABASE_LOGIN.auth import register_user, login_user, get_user_by_id
 from BACKEND.middleware.auth_middleware import get_current_user
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])

@@ -11,7 +11,7 @@ import os
 # Add project root to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
-from DATABASE_LOGIN.auth import decode_token
+from BACKEND.DATABASE_LOGIN.auth import decode_token
 
 security = HTTPBearer()
 

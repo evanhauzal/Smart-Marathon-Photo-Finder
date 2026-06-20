@@ -15,7 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
-from DATABASE_LOGIN.db import init_db
+from BACKEND.DATABASE_LOGIN.db import init_db
 from BACKEND.routes.auth import router as auth_router
 from BACKEND.routes.photos import router as photos_router
 from BACKEND.routes.search import router as search_router
@@ -36,7 +36,7 @@ app.add_middleware(
 )
 
 # Mount static files for serving photos
-photos_dir = os.path.join(PROJECT_ROOT, "PHOTOS")
+photos_dir = os.path.join(PROJECT_ROOT, "BACKEND", "PHOTOS")
 os.makedirs(photos_dir, exist_ok=True)
 app.mount("/photos", StaticFiles(directory=photos_dir), name="photos")
 
