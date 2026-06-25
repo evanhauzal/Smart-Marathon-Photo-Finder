@@ -135,9 +135,10 @@ def search_by_bib(bib_number: str, event_dir: str) -> list:
     matches = []
 
     for filename, detected_numbers in metadata.items():
-        # Check if the bib number matches any detected number
         for detected in detected_numbers:
-            if bib_number in detected or detected in bib_number:
+
+            # Exact match
+            if detected == bib_number:
                 matches.append(
                     {
                         "filename": filename,
